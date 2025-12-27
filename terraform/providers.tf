@@ -2,7 +2,7 @@ terraform {
   required_version = ">= 1.0.0"
 
   backend "s3" {
-    bucket         = "your-unique-terraform-state-bucket" # Replace with your bucket name
+    bucket         = "zurichai-test-terraform-state-2025" # Replace with your bucket name
     key            = "prod/terraform.tfstate"
     region         = "us-west-2"
     encrypt        = true
