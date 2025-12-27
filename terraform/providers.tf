@@ -1,0 +1,22 @@
+terraform {
+  required_version = ">= 1.0.0"
+
+  backend "s3" {
+    bucket         = "your-unique-terraform-state-bucket" # Replace with your bucket name
+    key            = "prod/terraform.tfstate"
+    region         = "us-west-2"
+    encrypt        = true
+    # dynamodb_table = "terraform-lock" # Optional: prevents concurrent runs
+  }
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "us-west-2"
+}
