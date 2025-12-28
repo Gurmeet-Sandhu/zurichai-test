@@ -25,7 +25,7 @@ resource "aws_efs_file_system" "shared_drive" {
 
 # --- COMPUTE (1/2): EC2 Instance ---
 resource "aws_instance" "app_server" {
-  ami           = "ami-0c55b159cbfafe1f0" # Amazon Linux 2
+  ami           = "ami-0ebf411a80b6b22cb" # Amazon Linux 2
   instance_type = "t3.micro"
   iam_instance_profile = aws_iam_instance_profile.ec2_cloudwatch_profile.name
   user_data = <<-EOF
