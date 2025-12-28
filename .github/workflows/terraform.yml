@@ -1,4 +1,4 @@
-name: "Terraform Deploy with Manual Approval"
+name: "🚀 Terraform Deploy"
 
 on:
   workflow_dispatch: {}
