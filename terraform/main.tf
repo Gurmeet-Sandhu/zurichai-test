@@ -24,41 +24,41 @@ resource "aws_efs_file_system" "shared_drive" {
 }
 
 # --- COMPUTE (1/2): EC2 Instance ---
-resource "aws_instance" "app_server" {
-  ami           = "ami-0ebf411a80b6b22cb" # Amazon Linux 2
-  instance_type = "t3.micro"
-  iam_instance_profile = aws_iam_instance_profile.ec2_cloudwatch_profile.name
-  user_data = <<-EOF
-              #!/bin/bash
-              yum update -y
-              yum install -y amazon-cloudwatch-agent
-              cat > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json << 'EOL'
-              {
-                "logs": {
-                  "logs_collected": {
-                    "files": {
-                      "collect_list": [
-                        {
-                          "file_path": "/var/log/messages",
-                          "log_group_name": "EC2-AppServer-SystemLogs",
-                          "log_stream_name": "{instance_id}"
-                        },
-                        {
-                          "file_path": "/var/log/secure",
-                          "log_group_name": "EC2-AppServer-SecurityLogs",
-                          "log_stream_name": "{instance_id}"
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-              EOL
-              systemctl enable amazon-cloudwatch-agent
-              systemctl start amazon-cloudwatch-agent
-              EOF
-  tags          = { Name = "Compute-EC2" }
-}
+# resource "aws_instance" "app_server" {
+#   ami           = "ami-0c7217cdde317cfec" # Amazon Linux 2023
+#   instance_type = "t3.micro"
+#   iam_instance_profile = aws_iam_instance_profile.ec2_cloudwatch_profile.name
+#   user_data = <<-EOF
+#               #!/bin/bash
+#               yum update -y
+#               yum install -y amazon-cloudwatch-agent
+#               cat > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json << 'EOL'
+#               {
+#                 "logs": {
+#                   "logs_collected": {
+#                     "files": {
+#                       "collect_list": [
+#                         {
+#                           "file_path": "/var/log/messages",
+#                           "log_group_name": "EC2-AppServer-SystemLogs",
+#                           "log_stream_name": "{instance_id}"
+#                         },
+#                         {
+#                           "file_path": "/var/log/secure",
+#                           "log_group_name": "EC2-AppServer-SecurityLogs",
+#                           "log_stream_name": "{instance_id}"
+#                         }
+#                       ]
+#                     }
+#                   }
+#                 }
+#               }
+#               EOL
+#               systemctl enable amazon-cloudwatch-agent
+#               systemctl start amazon-cloudwatch-agent
+#               EOF
+#   tags          = { Name = "Compute-EC2" }
+# }
 
 # --- COMPUTE (2/2): Lambda Function ---
 resource "aws_lambda_function" "processor" {
