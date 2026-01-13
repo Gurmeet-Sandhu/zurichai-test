@@ -1,7 +1,16 @@
 name: "🚀 Terraform Deploy"
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Choose action'
+        required: true
+        default: 'apply'
+        type: choice
+        options:
+          - apply
+          - destroy
 
 jobs:
   plan:
@@ -63,4 +72,34 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
+        working-directory: terraform
+
+  destroy:
+    name: "Terraform Destroy"
+    needs: plan
+    runs-on: ubuntu-latest
+    environment: prod  # Requires approval for safety
+    if: github.ref == 'refs/heads/main' && github.event.inputs.action == 'destroy'
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: "us-west-2"
+      TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: terraform
+
+      - name: Terraform Destroy Plan
+        run: terraform plan -destroy -out=tfplan-destroy
+        working-directory: terraform
+
+      - name: Terraform Destroy
+        run: terraform apply -auto-approve tfplan-destroy
         working-directory: terraform
